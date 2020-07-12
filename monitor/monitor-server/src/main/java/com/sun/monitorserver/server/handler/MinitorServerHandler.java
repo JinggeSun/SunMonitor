@@ -1,13 +1,12 @@
 package com.sun.monitorserver.server.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.monitorserver.socket.SocketServer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,7 +22,7 @@ public class MinitorServerHandler extends SimpleChannelInboundHandler<String> {
      */
     private static Map<Channel, Object> clientMap = new ConcurrentHashMap<>();
 
-    private static List<JSONObject> allMsgList = new ArrayList<>();
+    public static Map<String,Object> allMsgMap = new ConcurrentHashMap<>(10);
 
     /**
      * 连接
@@ -82,6 +81,17 @@ public class MinitorServerHandler extends SimpleChannelInboundHandler<String> {
                 addChannel(channel,ip);
             }
         }
+
+        /**
+         * 将消息添加到公共变量里面
+         */
+        if (msgObject.containsKey("info")){
+            String ip = msgObject.getString("ip");
+            allMsgMap.put(ip,msgObject);
+            //数据已经更新，通知websocket
+            SocketServer.sendAllMsg();
+        }
+
     }
 
     /**

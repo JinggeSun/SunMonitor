@@ -34,8 +34,12 @@ public class TransProtocol {
         diskMap = ComputerUtil.getDisk();
         Map<String,Object> memMap = new HashMap<>(10);
         memMap = ComputerUtil.getMemory();
+        Map<String,Object> cpuMap = new HashMap<>(10);
+        cpuMap = ComputerUtil.getCpuInfo();
         map.putAll(diskMap);
         map.putAll(memMap);
+        map.putAll(cpuMap);
+        map.put("info","");
         return map;
     }
 }
